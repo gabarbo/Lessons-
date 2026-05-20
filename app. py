@@ -1,0 +1,85 @@
+import gradio as gr
+import pandas as pd
+from datetime import date
+
+records = []
+
+def register_lesson(student_teacher, lesson_date, group, school, lesson_type, notes):
+    record = {
+        "Student teacher": student_teacher,
+        "Date": lesson_date,
+        "Group": group,
+        "School": school,
+        "Type of lesson": lesson_type,
+        "Notes": notes
+    }
+
+    records.append(record)
+    df = pd.DataFrame(records)
+
+    return "Lesson registered successfully.", df
+
+with gr.Blocks() as demo:
+    gr.Markdown("# Teaching Practice Lesson Register")
+
+    gr.Markdown(
+        "This application allows student teachers to register their teaching practice lessons. "
+        "They can record lessons with observation visits and lessons taught without a visit."
+    )
+
+    student_teacher = gr.Textbox(label="Student teacher's name")
+
+    lesson_date = gr.DateTime(
+        label="Lesson date",
+        include_time=False
+    )
+
+    group = gr.Textbox(label="Group")
+    school = gr.Textbox(label="School")
+
+    lesson_type = gr.Radio(
+        choices=[
+            "Lesson with observation visit",
+            "Lesson without observation visit"
+        ],
+        label="Type of lesson"
+    )
+
+    notes = gr.Textbox(
+        label="Notes",
+        lines=3
+    )
+
+    button = gr.Button("Register lesson")
+
+    output = gr.Textbox(label="Status")
+
+    table = gr.Dataframe(
+        label="Registered lessons",
+        headers=[
+            "Student teacher",
+            "Date",
+            "Group",
+            "School",
+            "Type of lesson",
+            "Notes"
+        ]
+    )
+
+    button.click(
+        register_lesson,
+        inputs=[
+            student_teacher,
+            lesson_date,
+            group,
+            school,
+            lesson_type,
+            notes
+        ],
+        outputs=[
+            output,
+            table
+        ]
+    )
+
+demo.launch()
